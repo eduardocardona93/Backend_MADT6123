@@ -18,4 +18,4 @@ const productsInOrderSchema = new Schema({
 
 const ProductsInOrder = mongoose.model('ProductsInOrder', productsInOrderSchema);
 
-module.exports = ProductsInOrder;
+module.exports = {ProductsInOrder,productsInOrderSchema};

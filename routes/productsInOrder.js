@@ -1,5 +1,5 @@
 const router = require('express').Router();
-let ProductsInOrder = require('../models/productsInOrder.model');
+let {ProductsInOrder,productsInOrderSchema} = require('../models/productsInOrder.model');
 
 // GET ALL
 router.route('/').get((req, res) => {
@@ -19,7 +19,7 @@ router.route('/:id').get((req, res) => {
 //DETELTE ONE
 router.route('/:id').delete((req, res) => {
   ProductsInOrder.findByIdAndDelete(req.params.id)
-    .then(() => res.json('Products Category deleted.'))
+    .then(() => res.json('ProductsInOrder deleted.'))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
@@ -39,7 +39,7 @@ router.route('/add').post((req, res) => {
   });
 
   newProductsCategory.save()
-    .then(() => res.json('Products Category added!'))
+    .then(() => res.json('ProductsInOrder added!'))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
