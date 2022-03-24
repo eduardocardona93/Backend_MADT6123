@@ -27,12 +27,12 @@ router.route('/:id').delete((req, res) => {
 // CREATE 
 router.route('/add').post((req, res) => {
   const newUser = new User({
-    'address' : req.body.address,
-    'email' : req.body.email,
-    'isAdmin' : req.body.isAdmin,
-    'name' : req.body.name,
-    'password' : req.body.password,
-    'phoneNumber' : req.body.phoneNumber,
+    "address" : req.body.address,
+    "email" : req.body.email,
+    "isAdmin" : req.body.isAdmin,
+    "name" : req.body.name,
+    "password" : req.body.password,
+    "phoneNumber" : req.body.phoneNumber,
   });
 
   newUser.save()
