@@ -29,7 +29,6 @@ router.route('/add').post((req, res) => {
   const newUser = new User({
     'address' : req.body.address,
     'email' : req.body.email,
-    'id' : req.body.id,
     'isAdmin' : req.body.isAdmin,
     'name' : req.body.name,
     'password' : req.body.password,
