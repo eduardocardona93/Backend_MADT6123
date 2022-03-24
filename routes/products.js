@@ -31,7 +31,7 @@ router.route('/add').post((req, res) => {
     "categoryName" : req.body.categoryName,
     "description" : req.body.description,
     "name" : req.body.name,
-    "price" : parseFloat(req.body.password),
+    "price" : parseFloat(req.body.price),
   });
 
   newProduct.save()
