@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 
 const Schema = mongoose.Schema;
 
-const productsCategorySchema = new Schema({
+const productsInOrderSchema = new Schema({
   categoryId:{type: String,required: true,trim: true,minlength: 3},
   categoryName:{type: String,required: true,trim: true,minlength: 3},
   date:{type: String,required: true,trim: true,minlength: 3},
@@ -11,10 +11,11 @@ const productsCategorySchema = new Schema({
   price:{type: Number,required: true},
   quantity:{type: Number,required: true},
   totalItem:{type: Number,required: true},
+  id:{type: String,required: true},
 }, {
   timestamps: true,
 });
 
-const ProductsCategoy = mongoose.model('ProductsCategoy', productsCategorySchema);
+const ProductsInOrder = mongoose.model('ProductsInOrder', productsInOrderSchema);
 
-module.exports = ProductsCategoy;
+module.exports = ProductsInOrder;

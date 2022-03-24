@@ -8,6 +8,6 @@ const productsCategorySchema = new Schema({
   timestamps: true,
 });
 
-const ProductsCategoy = mongoose.model('ProductsCategoy', productsCategorySchema);
+const ProductsCategory = mongoose.model('ProductsCategory', productsCategorySchema);
 
-module.exports = ProductsCategoy;
+module.exports = ProductsCategory;

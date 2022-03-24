@@ -1,24 +1,24 @@
 const router = require('express').Router();
-let ProductsCategory = require('../models/productsCategory.model');
+let ProductsInOrder = require('../models/productsInOrder.model');
 
 // GET ALL
 router.route('/').get((req, res) => {
-  ProductsCategory.find()
-    .then(productsCategories => res.json(productsCategories))
+  ProductsInOrder.find()
+    .then(productsInOrder => res.json(productsInOrder))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
 
 //GET ONE
 router.route('/:id').get((req, res) => {
-  ProductsCategory.findById(req.params.id)
-    .then(productsCategory => res.json(productsCategory))
+  ProductsInOrder.findById(req.params.id)
+    .then(productsInOrder => res.json(productsInOrder))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
 //DETELTE ONE
 router.route('/:id').delete((req, res) => {
-  ProductsCategory.findByIdAndDelete(req.params.id)
+  ProductsInOrder.findByIdAndDelete(req.params.id)
     .then(() => res.json('Products Category deleted.'))
     .catch(err => res.status(400).json('Error: ' + err));
 });
@@ -26,8 +26,16 @@ router.route('/:id').delete((req, res) => {
 
 // CREATE 
 router.route('/add').post((req, res) => {
-  const newProductsCategory = new ProductsCategory({
-    "name" : req.body.name,
+  const newProductsCategory = new ProductsInOrder({
+    "categoryId":req.body.categoryId,
+    "categoryName":req.body.categoryName,
+    "date":req.body.date,
+    "description":req.body.description,
+    "name":req.body.name,
+    "price": parseFloat(req.body.price),
+    "quantity": parseInt(req.body.quantity),
+    "totalItem": parseFloat(req.body.totalItem),
+    "id":req.body.id,
   });
 
   newProductsCategory.save()
@@ -38,11 +46,20 @@ router.route('/add').post((req, res) => {
 
 // UPDATE
 router.route('/update/:id').post((req, res) => {
-  ProductsCategory.findById(req.params.id)
-    .then(productsCategory => {
-      productsCategory["name"] = req.body.name;
-      productsCategory.save()
-        .then(() => res.json('ProductsCategory updated!'))
+  ProductsInOrder.findById(req.params.id)
+    .then(productsInOrder => {
+      productsInOrder["name"] = req.body.name,
+      productsInOrder["categoryId"] = req.body.categoryId,
+      productsInOrder["categoryName"] = req.body.categoryName,
+      productsInOrder["date"] = req.body.date,
+      productsInOrder["description"] = req.body.description,
+      productsInOrder["name"] = req.body.name,
+      productsInOrder["price"] = parseFloat(req.body.price),
+      productsInOrder["quantity"] = parseInt(req.body.quantity),
+      productsInOrder["totalItem"] = parseFloat(req.body.totalItem),
+      productsInOrder["id"] = req.body.id,
+      productsInOrder.save()
+        .then(() => res.json('ProductsInOrder updated!'))
         .catch(err => res.status(400).json('Error: ' + err));
     })
     .catch(err => res.status(400).json('Error: ' + err));
