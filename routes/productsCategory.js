@@ -3,7 +3,7 @@ let ProductsCategory = require('../models/productsCategory.model');
 
 // GET ALL
 router.route('/').get((req, res) => {
-  ProductsCategory.find()
+  ProductsCategory.find().sort({ name: 'asc' })
     .then(productsCategories => res.json(productsCategories))
     .catch(err => res.status(400).json('Error: ' + err));
 });

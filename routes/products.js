@@ -3,7 +3,17 @@ let Product = require('../models/product.model');
 
 // GET ALL
 router.route('/').get((req, res) => {
-  Product.find()
+  let filterCategory ={},filterSearch= {},finalFilter={};
+  if(req.query.category && req.query.category !== ''){
+    filterCategory={categoryId: req.query.category};
+  }
+  if(req.query.searchText && req.query.searchText !== ''){
+    
+    filterSearch = { $or: [ {name: { $regex: '.*' + req.query.searchText + '.*' , $options: 'i'} } ,  {description: { $regex: '.*' + req.query.searchText + '.*', $options: 'i' } } ] }
+  }
+
+  finalFilter = { ...filterCategory, ...filterSearch }
+  Product.find(finalFilter)
     .then(products => res.json(products))
     .catch(err => res.status(400).json('Error: ' + err));
 });

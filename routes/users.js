@@ -16,6 +16,13 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('/findByEmail').get((req, res) => {
+  console.log(req.query.email)
+  User.findOne({ email: req.query.email })
+    .then(user => res.json(user))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
 //DETELTE ONE
 router.route('/:id').delete((req, res) => {
   User.findByIdAndDelete(req.params.id)
