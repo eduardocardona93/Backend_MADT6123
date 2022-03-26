@@ -1,5 +1,6 @@
 const router = require('express').Router();
 let ProductsCategory = require('../models/productsCategory.model');
+let Product = require('../models/product.model');
 
 // GET ALL
 router.route('/').get((req, res) => {
@@ -16,18 +17,29 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-//DETELTE ONE
+//DELETE ONE
 router.route('/:id').delete((req, res) => {
-  ProductsCategory.findByIdAndDelete(req.params.id)
-    .then(() => res.json('Products Category deleted.'))
-    .catch(err => res.status(400).json('Error: ' + err));
+  Product.deleteMany({ categoryId: req.params.id})
+  .then(response => {
+    console.log(response)
+    ProductsCategory.findByIdAndDelete(req.params.id)
+    .then(() => {
+      res.json('Products Category deleted.');
+    })
+    .catch(err => {
+      res.status(400).json('Error: ' + err);
+    });
+  }).catch(err => {
+    res.status(400).json('Error: ' + err);
+  });
+
 });
 
 
 // CREATE 
 router.route('/add').post((req, res) => {
   const newProductsCategory = new ProductsCategory({
-    "name" : req.body.name,
+    "name" : req.body.name
   });
 
   newProductsCategory.save()

@@ -16,7 +16,7 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-//DETELTE ONE
+//DELETE ONE
 router.route('/:id').delete((req, res) => {
   ProductsInOrder.findByIdAndDelete(req.params.id)
     .then(() => res.json('ProductsInOrder deleted.'))

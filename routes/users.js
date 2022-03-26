@@ -7,7 +7,16 @@ router.route('/').get((req, res) => {
     .then(users => res.json(users))
     .catch(err => res.status(400).json('Error: ' + err));
 });
+router.route('/:filterTerm').get((req, res) => {
+  filterSearch = { $or: 
+    [ {name: { $regex: '.*' + req.params.filterTerm + '.*' , $options: 'i'} } ,  
+      {phoneNumber: { $regex: '.*' + req.params.filterTerm + '.*' , $options: 'i'} } ,  
+      {email: { $regex: '.*' + req.params.filterTerm + '.*', $options: 'i' } } ] }
 
+  User.find(filterSearch)
+    .then(users => res.json(users))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
 
 //GET ONE
 router.route('/:id').get((req, res) => {
@@ -16,14 +25,13 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('/findByEmail').get((req, res) => {
-  console.log(req.query.email)
-  User.findOne({ email: req.query.email })
+router.route('/findByEmail/:email').get((req, res) => {
+  User.findOne({ email: req.params.email })
     .then(user => res.json(user))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-//DETELTE ONE
+//DELETE ONE
 router.route('/:id').delete((req, res) => {
   User.findByIdAndDelete(req.params.id)
     .then(() => res.json('User deleted.'))
@@ -43,22 +51,24 @@ router.route('/add').post((req, res) => {
   });
 
   newUser.save()
-    .then(() => res.json('User added!'))
-    .catch(err => res.status(400).json('Error: ' + err));
+    .then((response) => {
+      console.log(response)
+      res.send({message: 'User added!', newUser:response})
+    })
+    .catch(err => {
+      res.status(400).json('Error: ' + err)
+    });
 });
 
 
 // UPDATE
 router.route('/update/:id').post((req, res) => {
+  console.log(req.params.id,req.body.name)
   User.findById(req.params.id)
     .then(user => {
 
       user['address'] = req.body.address;
-      user['email'] = req.body.email;
-      user['id'] = req.body.id;
-      user['isAdmin'] = req.body.isAdmin;
       user['name'] = req.body.name;
-      user['password'] = req.body.password;
       user['phoneNumber'] = req.body.phoneNumber;
       user.save()
         .then(() => res.json('User updated!'))

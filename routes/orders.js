@@ -2,12 +2,30 @@ const router = require('express').Router();
 let Order = require('../models/order.model');
 
 // GET ALL
-router.route('/').get((req, res) => {
-  Order.find()
+router.route('/:filterStatus').get((req, res) => {
+  let  userObj={}, statusObj={},filterStatus= req.params.filterStatus,filterUser = req.query.filterUser;
+  if(filterStatus && filterStatus !== 'all'){
+    statusObj = {status :filterStatus };
+  }
+  if(filterUser && filterUser !== ''){
+    userObj =  {userId :filterUser }
+  }
+  Order.find({ status: { $ne: "shopping" } ,...filterStatus,...userObj }).sort({ date: 'desc' })
     .then(orders => res.json(orders))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
+router.route('shoppingCart/:filterUser').get((req, res) => {
+  if(!req.query.filterUser){
+    res.status(400).json('Error: userID not defined' )
+  }else{
+    Order.find({ status: { $ne: "shopping" } ,userId :req.query.filterUser }).sort({ date: 'desc' })
+    .then(orders => res.json(orders))
+    .catch(err => res.status(400).json('Error: ' + err));
+
+  }
+
+});
 
 //GET ONE
 router.route('/:id').get((req, res) => {
@@ -16,7 +34,7 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-//DETELTE ONE
+//DELETE ONE
 router.route('/:id').delete((req, res) => {
   Order.findByIdAndDelete(req.params.id)
     .then(() => res.json('Order deleted.'))
@@ -31,7 +49,7 @@ router.route('/add').post((req, res) => {
     "status" : req.body.status,
     "title" : req.body.title,
     "total" : req.body.total,
-    "userID" : req.body.userID,
+    "userId" : req.body.userId,
     "items" : req.body.items,
   });
 

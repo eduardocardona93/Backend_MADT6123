@@ -1,7 +1,7 @@
 const router = require('express').Router();
 let Product = require('../models/product.model');
 
-// GET ALL
+// GET ALL OR FILTERED
 router.route('/').get((req, res) => {
   let filterCategory ={},filterSearch= {},finalFilter={};
   if(req.query.category && req.query.category !== ''){
@@ -26,7 +26,7 @@ router.route('/:id').get((req, res) => {
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-//DETELTE ONE
+//DELETE ONE
 router.route('/:id').delete((req, res) => {
   Product.findByIdAndDelete(req.params.id)
     .then(() => res.json('Product deleted.'))
