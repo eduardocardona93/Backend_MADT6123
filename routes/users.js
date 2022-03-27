@@ -30,7 +30,38 @@ router.route('/findByEmail/:email').get((req, res) => {
     .then(user => res.json(user))
     .catch(err => res.status(400).json('Error: ' + err));
 });
+router.route('/loginUser/:email').get((req, res) => {
+  User.findOne({ email: req.params.email })
+    .then(user => {
+      if(!user){
+        res.json({message:"Incorrect User email" ,loggedUser:null})
 
+      }else if(user && user.password !== req.query.password){
+
+        res.json({message:"Incorrect User password" ,loggedUser:null})
+      }else{
+        res.json({message:"User logged" ,loggedUser:user})
+      }
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/passwordChange/:userID').get((req, res) => {
+  User.findById (userID)
+    .then(user => {
+      if(!user){
+        res.json({message:"Incorrect User email" ,success:false})
+
+      }else{
+        user.password = req.query.password;
+        user.save()
+        .then(() => res.json({message:"Password successfully changed!!" ,success:true}))
+        .catch(err => res.status(400).json('Error: ' + err));
+        
+      }
+    })
+    .catch(err => res.status(400).json('Error: ' + err));
+});
 //DELETE ONE
 router.route('/:id').delete((req, res) => {
   User.findByIdAndDelete(req.params.id)

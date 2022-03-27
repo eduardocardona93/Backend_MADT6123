@@ -7,7 +7,12 @@ router.route('/').get((req, res) => {
     .then(productsInOrder => res.json(productsInOrder))
     .catch(err => res.status(400).json('Error: ' + err));
 });
-
+// GET ALL
+router.route('/getSales').get((req, res) => {
+  ProductsInOrder.find()
+    .then(productsInOrder => res.json(productsInOrder))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
 
 //GET ONE
 router.route('/:id').get((req, res) => {
@@ -35,7 +40,7 @@ router.route('/add').post((req, res) => {
     "price": parseFloat(req.body.price),
     "quantity": parseInt(req.body.quantity),
     "totalItem": parseFloat(req.body.totalItem),
-    "id":req.body.id,
+    "productId":req.body._id,
   });
 
   newProductsCategory.save()
