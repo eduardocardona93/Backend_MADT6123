@@ -11,7 +11,7 @@ const productsInOrderSchema = new Schema({
   price:{type: Number,required: true},
   quantity:{type: Number,required: true},
   totalItem:{type: Number,required: true},
-  id:{type: String,required: true},
+  productId:{type: String,required: true},
 }, {
   timestamps: true,
 });

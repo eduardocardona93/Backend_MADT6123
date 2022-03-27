@@ -1,26 +1,37 @@
 const router = require('express').Router();
 let Order = require('../models/order.model');
+let {ProductsInOrder, productsInOrderSchema} = require('../models/productsInOrder.model');
 
+const moment = require('moment')
 // GET ALL
-router.route('/:filterStatus').get((req, res) => {
+
+router.route('/').get((req, res) => {
+  Order.find().sort({ date: 'desc' })
+    .then(orders => res.json(orders))
+    .catch(err => res.status(400).json('Error: ' + err));
+});
+
+router.route('/filtered/:filterStatus').get((req, res) => {
   let  userObj={}, statusObj={},filterStatus= req.params.filterStatus,filterUser = req.query.filterUser;
   if(filterStatus && filterStatus !== 'all'){
     statusObj = {status :filterStatus };
   }
   if(filterUser && filterUser !== ''){
-    userObj =  {userId :filterUser }
+    userObj =  {userID :filterUser }
   }
-  Order.find({ status: { $ne: "shopping" } ,...filterStatus,...userObj }).sort({ date: 'desc' })
+  Order.find({ status: { $ne: "shopping" } ,...filterStatus,...userObj }).sort({ title: 'desc' })
     .then(orders => res.json(orders))
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
-router.route('shoppingCart/:filterUser').get((req, res) => {
-  if(!req.query.filterUser){
-    res.status(400).json('Error: userID not defined' )
+router.route('/shoppingCart/:filterUser').get((req, res) => {
+  if(!req.params.filterUser){
+    res.status(400).json({message:'Error: userID not defined' })
   }else{
-    Order.find({ status: { $ne: "shopping" } ,userId :req.query.filterUser }).sort({ date: 'desc' })
-    .then(orders => res.json(orders))
+    Order.findOne ({status:  "shopping" ,userID :req.params.filterUser})
+    .then(orders => {
+      res.json(orders)
+    })
     .catch(err => res.status(400).json('Error: ' + err));
 
   }
@@ -43,38 +54,94 @@ router.route('/:id').delete((req, res) => {
 
 
 // CREATE 
-router.route('/add').post((req, res) => {
-  const newOrder = new Order({
-    "date" : req.body.date,
-    "status" : req.body.status,
-    "title" : req.body.title,
-    "total" : req.body.total,
-    "userId" : req.body.userId,
-    "items" : req.body.items,
-  });
-
-  newOrder.save()
-    .then(() => res.json('Order added!'))
-    .catch(err => res.status(400).json('Error: ' + err));
-});
-
-
-// UPDATE
-router.route('/update/:id').post((req, res) => {
-    console.log(req.body)
-  Order.findById(req.params.id)
-    .then(order => {
-        order["date"] = req.body.date;
-        order["status"] = req.body.status;
-        order["title"] = req.body.title;
-        order["total"] = req.body.total;
-        order["userID"] = req.body.userID;
-        order["items"] = req.body.items;
-      order.save()
-        .then(() => res.json('Order updated!'))
+router.route('/addToShoppingCart').post((req, res) => {
+  Order.findOne({ status:"shopping" ,userID :req.body.userID })
+  .then(order => {
+    if(order){
+      order.total +=  parseFloat(req.body.newItem.totalItem);
+      order.taxes = parseFloat(order.total * 0.13);
+      order.shipping = parseFloat(order.total * 0.10);
+      order.net = parseFloat(order.total + taxes + shipping);
+      order.items.push(req.body.newItem)
+      order.save() 
+        .then(() => res.json('Item added!'))
         .catch(err => res.status(400).json('Error: ' + err));
-    })
+    }else{
+      Order.find().sort({ title: 'desc' }).limit(1).then(response => {
+        const consecutive = response.length > 0 ? parseInt(response[0].title) : 0;
+        const addSubtotal = parseFloat(req.body.newItem.totalItem);
+        const dateString = moment().format('DD/MM/YYYY hh:mm a').toString();
+        const taxes = parseFloat(addSubtotal * 0.13);
+        const shipping = parseFloat(addSubtotal * 0.10);
+        const net = parseFloat(addSubtotal + taxes + shipping);
+        const newOrder = new Order({
+          "status" : "shopping",
+          "title" : (consecutive+1).toString().padStart(6, '0'),
+          "total" : addSubtotal,
+          "net" : net,
+          "taxes" : taxes,
+          "shipping" : shipping,
+          "dateString" : dateString,
+          "userId" : req.body.userId,
+          "items" : [req.body.newItem],
+      });
+
+      newOrder.save() 
+        .then(() => res.json('Item added!'))
+        .catch(err => res.status(400).json('Error: ' + err));
+      })
+    }
+  
+  })
+  .catch(err => res.status(400).json('Error: ' + err));
+});
+//DELETE ONE
+router.route('removeFromShoppingCart/').delete((req, res) => {
+
+  Order.findOne({ status:"shopping" ,userID :req.query.userID }).then(order => {
+    if(order.items.length > 1){
+      order.items.splice(req.query.index,1);
+      order.save().then((orderSaved) => res.json(orderSaved))
+      .catch(err => res.status(400).json('Error: ' + err));
+    }else{
+      order.delete()
+      .then(()=>{ res.json(null)})
+      .catch(err => res.status(400).json('Error: ' + err));
+    }
+  })
+.catch(err => res.status(400).json('Error: ' + err));
+  Order.findByIdAndDelete(req.params.id)
+    .then(() => res.json('Order deleted.'))
     .catch(err => res.status(400).json('Error: ' + err));
 });
+
+
+//UPDATE STATE
+
+router.route('/changeState/:orderID').put((req, res) => {
+  Order.findById(req.body.orderID)
+  .then(order => {
+    if(order){
+      order.status = newStatus;
+      if(order.status === 'completed'){
+        ProductsInOrder.bulkSave(order.items)
+        .then(() => {
+          order.save() 
+          .then(() => res.json('Order Updated'))
+          .catch(err => res.status(400).json('Error: ' + err));
+        })
+        .catch(err => res.status(400).json('Error: ' + err));
+      }
+
+    }else{
+      order.save() 
+      .then(() => res.json('Order Updated'))
+      .catch(err => res.status(400).json('Error: ' + err));
+    }
+  
+  })
+  .catch(err => res.status(400).json('Error: ' + err));
+});
+
 
 module.exports = router;
