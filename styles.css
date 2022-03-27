@@ -3,9 +3,10 @@ body {
   background-repeat: no-repeat;
   background-position: top left;
   background-attachment: fixed;
-  margin-left: 10%;
-  margin-right: 10%;
+  margin-left: 22%;
+  margin-right: 22%;
   margin-top: auto;
+  text-align: center;
 }
 
 h1 {
@@ -27,8 +28,9 @@ p {
 .position {
   width: 100%;
   background-color: #ffffff;
-  padding: 12px;
-  height: 100%;
+  height: fit-content;
+  padding-top: 12%;
+  padding-bottom: 17%;
 }
 
 form {
