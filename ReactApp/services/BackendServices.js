@@ -130,9 +130,9 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
         })
       })
   }
-  export const updateProduct = (product) => {
+  export const updateProduct = (product,productId) => {
     return fetch(
-      SERVICE_URL + 'products/update/'+ encodeURIComponent(product._id), {
+      SERVICE_URL + 'products/update/'+ encodeURIComponent(productId), {
         method: 'POST',
         headers: {
         Accept: 'application/json',

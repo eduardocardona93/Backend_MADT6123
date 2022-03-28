@@ -12,30 +12,35 @@ const EditProductScreen = ({navigation,route}) => {
     const productId =  route.params && route.params.id !== null ?  route.params.id : null;
     const [productName , productNameSet] = useState( null);
     const [productDescription , productDescriptionSet] = useState( null);
-    const [productPrice , productPriceSet] = useState( null);
+    const [productPrice , productPriceSet] = useState( 0);
     const [productCategory , productCategorySet] = useState(null);
     const [categories , categoriesSet] = useState([]);
 
-
-    useEffect(() => {
-      getAllCategories().then(categoriesFound => {
-        categoriesSet(categoriesFound)
-        if(productId){
-          getProduct(productId).then(productFound => {
-            productNameSet(productFound.name)
-            productDescriptionSet(productFound.description)
-            productPriceSet(productFound.price)
-            productCategorySet(categoriesFound.find(cat => cat._id === productFound.categoryId))
-          }).catch()
-        }
-
-      }).catch()
-      console.log('executo1 ' , productId)
-      return () =>   {
-        console.log('executo2')
-      }
-    }, [])
+    React.useEffect(() => {
+      const unsubscribe = navigation.addListener('focus',async () => {
+        try {
+          getAllCategories().then(categoriesFound => {
+            categoriesSet(categoriesFound)
+            if(productId){
+              getProduct(productId).then(productFound => {
+                productNameSet(productFound.name)
+                productDescriptionSet(productFound.description)
+                productPriceSet((productFound.price).toString())
+                productCategorySet(categoriesFound.find(cat => cat._id === productFound.categoryId))
+              })
+            }
     
+          })
+        } catch (error) {
+          console.log(error)
+        }
+  
+        
+      });
+  
+      return unsubscribe;
+    }, [navigation]);
+
     React.useLayoutEffect(() => {
         navigation.setOptions({
             title : productId ? 'Edit Product' : 'Add Product' ,
@@ -65,21 +70,26 @@ const EditProductScreen = ({navigation,route}) => {
         }else if(!productCategory || productCategory === ''){
             alert('Product Category field is empty!')
         }else{
-          const product = {
-            'name': productName,
-            'description': productDescription,
-            'price': productPrice,
-            'categoryId': productCategory['id'],
-            'categoryName': productCategory['name'],
-         }
+              const product = {
+                'name': productName,
+                'description': productDescription,
+                'price': productPrice,
+                'categoryId': productCategory['_id'],
+                'categoryName': productCategory['name'],
+            }
             if(productId){
-              updateProduct(product)
-                navigation.navigate('HomeScreen')
-              
-              
+              updateProduct(product,productId).then(()=>{
+                navigation.navigate('HomeScreen',{catId:productCategory['_id']})
+              }).catch(e => {
+                console.log(e)
+              })
             }else{
-              createProduct(product)
+              createProduct(product).then(()=>{
                 navigation.dispatch(CommonActions.goBack());
+              }).catch(e => {
+                console.log(e)
+              })
+                
 
             }
         }
@@ -108,7 +118,8 @@ const EditProductScreen = ({navigation,route}) => {
       </View>
       <View  style={styles.row}>
         <Text style={styles.label}>Product Price:</Text>
-        <TextInput keyboardType='number-pad'
+        <TextInput 
+        keyboardType='number-pad'
           placeholder='ex: 12.00'
           value={productPrice}
           onChangeText={text => productPriceSet(text)}

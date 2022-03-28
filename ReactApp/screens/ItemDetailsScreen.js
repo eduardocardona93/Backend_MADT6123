@@ -16,9 +16,7 @@ const ItemDetailsScreen = ({ navigation, route }) => {
     React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus',async () => {
       try {
-        console.log(productId)
         getProduct(productId).then(productFound => {
-          console.log(productFound)
           productSet(productFound)
         })
       } catch (error) {

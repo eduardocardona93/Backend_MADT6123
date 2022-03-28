@@ -58,7 +58,7 @@ router.route('/update/:id').post((req, res) => {
       product["categoryName"] = req.body.categoryName;
       product["description"] = req.body.description;
       product["name"] = req.body.name;
-      product["price"] = parseFloat(req.body.password);
+      product["price"] = parseFloat(req.body.price);
       product.save()
         .then(() => res.json('Product updated!'))
         .catch(err => res.status(400).json('Error: ' + err));
