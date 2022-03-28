@@ -297,9 +297,19 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
   
   
   
-  export const getSales = async ( ) => {
+  export const getSales = async (userID) => {
+   
+    var dataSales = null;
+  
+    await fetch(SERVICE_URL + 'productsInOrders/getSales')
+      .then((response) => response.json())
+      .then(json =>{
+        dataSales = json;
+      }).catch(error =>{
+        console.log(error)
+      })
 
-    return fetch(SERVICE_URL + 'productsInOrders/getSales');
-    
+      return dataSales;
   }
+
   // #endregion

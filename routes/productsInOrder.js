@@ -12,61 +12,106 @@ router.route('/').get((req, res) => {
 
 // GET ALL
 router.route('/getSales').get((req, res) => {
-  let timeFilter = {}, typeFilter={};
-  if(req.query.time === 'week'){
-    timeFilter = {
-      $match: {
-        $date: {
-          $gte: moment().add(-1,'weeks').format('DD/MM/YYYY hh:mm a'),
-          $lt: moment().format('DD/MM/YYYY hh:mm a')
-        }
+  // let timeFilter = {}, typeFilter={};
+  // if(req.query.time === 'week'){
+  //   timeFilter = {
+  //     $match: {
+  //       $date: {
+  //         $gte: moment().add(-1,'weeks').format('DD/MM/YYYY hh:mm a'),
+  //         $lt: moment().format('DD/MM/YYYY hh:mm a')
+  //       }
+  //     }
+  //   }
+  // }else if(req.query.time === 'month'){
+  //   timeFilter = {
+  //     $match: {
+  //       date: {
+  //         $gte: moment().add(-1,'month').format('DD/MM/YYYY hh:mm a'),
+  //         $lt: moment().format('DD/MM/YYYY hh:mm a')
+  //       }
+  //     }
+  //   }
+  // }
+  // if(req.query.type === 'categories'){
+  //   typeFilter =  {
+  //     "id" : "$categoryId",
+  //     "Name":"$categoryName"
+  //  }
+  // }else{
+  //   typeFilter = {
+  //     "id" : "$productId",
+  //     "Name":"$name"
+  //  }
+  // }
+  // console.log({
+  //   ...timeFilter,
+  //     $group: {
+  //       _id: {...typeFilter},
+  //       totalItem: {
+  //         $sum: "$totalItem"
+  //       }
+  //     }
+  // })
+  //   ProductsInOrder.aggregate([{
+  //     ...timeFilter,
+  //     $group: {
+  //       _id: {...typeFilter},
+  //       totalItem: {
+  //         $sum: "$totalItem"
+  //       }
+  //     }
+  //   }]).then(sales => {
+  //     res.json(sales)
+  //   }).catch(err => res.status(400).json('Error: ' + err));
+  ProductsInOrder.find().then(sales => {
+  let products = {}
+  let categories = {}
+  sales.forEach(itemObj => {
+
+
+    if (!products[itemObj.productId]) {
+      products[itemObj.productId] = {
+        id: itemObj.productId,
+        name: itemObj.name,
+        total: 0,
+        totalWeek: 0,
+        totalMonth: 0
       }
     }
-  }else if(req.query.time === 'month'){
-    timeFilter = {
-      $match: {
-        date: {
-          $gte: moment().add(-1,'month').format('DD/MM/YYYY hh:mm a'),
-          $lt: moment().format('DD/MM/YYYY hh:mm a')
-        }
+    products[itemObj.productId].total = parseFloat(products[itemObj.productId].total) + parseFloat(itemObj.totalItem)
+    if (Math.abs(moment().diff(moment(itemObj.date), 'weeks')) < 1) {
+      products[itemObj.productId].totalWeek = parseFloat(products[itemObj.productId].totalWeek) + parseFloat(itemObj.totalItem)
+    }
+    if (Math.abs(moment().diff(moment(itemObj.date), 'months')) < 1) {
+      products[itemObj.productId].totalMonth = parseFloat(products[itemObj.productId].totalMonth) + parseFloat(itemObj.totalItem)
+    }
+
+
+    if (!categories[itemObj.categoryId]) {
+      categories[itemObj.categoryId] = {
+        id: itemObj.categoryId,
+        name: itemObj.categoryName,
+        total: 0,
+        totalWeek: 0,
+        totalMonth: 0
       }
     }
-  }
-  if(req.query.type === 'categories'){
-    typeFilter =  {
-      "id" : "$categoryId",
-      "Name":"$categoryName"
-   }
-  }else{
-    typeFilter = {
-      "id" : "$productId",
-      "Name":"$name"
-   }
-  }
-  console.log({
-    ...timeFilter,
-      $group: {
-        _id: {...typeFilter},
-        totalItem: {
-          $sum: "$totalItem"
-        }
-      }
+    console.log(parseFloat(itemObj.totalItem))
+    categories[itemObj.categoryId].total = parseFloat(categories[itemObj.categoryId].total) + parseFloat(itemObj.totalItem)
+    if (Math.abs(moment().diff(moment(itemObj.date), 'weeks')) < 1) {
+      categories[itemObj.categoryId].totalWeek = parseFloat(categories[itemObj.categoryId].totalWeek) + parseFloat(itemObj.totalItem)
+    }
+    if (Math.abs(moment().diff(moment(itemObj.date), 'months')) < 1) {
+      categories[itemObj.categoryId].totalMonth = parseFloat(categories[itemObj.categoryId].totalMonth) + parseFloat(itemObj.totalItem)
+    }
   })
-    ProductsInOrder.aggregate([{
-      ...timeFilter,
-      $group: {
-        _id: {...typeFilter},
-        totalItem: {
-          $sum: "$totalItem"
-        }
-      }
-    }]).then(sales => {
-      res.json(sales)
-    }).catch(err => res.status(400).json('Error: ' + err));
-  
+  res.json({
+    products: Object.values(products),
+    categories: Object.values(categories)
+  })
+  }).catch(err => res.status(400).json('Error: ' + err));
 
-
-});
+  });
 router.route('/setSales').get((req, res) => {
   Order.find().sort({ date: 'desc' })
   .then(orders => {
