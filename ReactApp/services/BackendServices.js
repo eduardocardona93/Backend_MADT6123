@@ -1,7 +1,7 @@
 
 import uuid from 'react-native-uuid';
 import moment from 'moment';
-const SERVICE_URL = 'http://192.168.2.144:3050/'
+const SERVICE_URL = 'http://142.114.90.186:3050/'
 
 // #region Users related operations
   export const Signup = ( user) => {
