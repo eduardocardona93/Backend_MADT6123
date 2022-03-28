@@ -6,7 +6,7 @@ import MangoStyles from '../styles'
 import useWindowDimensions from 'react-native/Libraries/Utilities/useWindowDimensions';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 
-import {  GetUserInfo } from '../services/BackendServices';
+import {  LoginUser } from '../services/BackendServices';
 import { InputField, ErrorMessage } from '../components';
 
 
