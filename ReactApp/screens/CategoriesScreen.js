@@ -3,20 +3,19 @@ import React, { useState,useContext }  from 'react'
 import { createCategory,updateCategory,getAllCategories,removeCategory } from '../services/BackendServices';
 import { Ionicons} from '@expo/vector-icons';
 import MangoStyles from '../styles'
-import { NavigationContainer, useFocusEffect } from '@react-navigation/native'
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 import Prompt from 'react-native-prompt-crossplatform';
 const CategoriesScreen = ({navigation,route}) => {
     const { user } = useContext(AuthenticatedUserContext);
     const [categories, categoriesSet] = useState([]);
+
     const [promptVisible,promptVisibleSet] = useState(false)
     const [promptText,promptTextSet] = useState('')
     const [selectedCategory,selectedCategorySet] = useState(null);
     
     const selectCategory =  (item) =>{
-        navigation.navigate('HomeScreen', {catId:item.id});
+        navigation.navigate('HomeScreen', {catId:item._id});
     }
     const editCategory = async(item) =>{
       await selectedCategorySet(item)
@@ -78,11 +77,12 @@ const CategoriesScreen = ({navigation,route}) => {
       }, [navigation]);
 
       const updateCategoryList = () => {
-        getAllCategories().then(categoriesFound => {
-          categoriesSet(categoriesFound.sort((a, b) => {
-            return a.name < b.name ? -1 : 1
-          }))
-        }).catch()
+        getAllCategories()
+        .then(categoriesFound => {
+          categoriesSet(categoriesFound)
+        }).catch(e => {
+          console.log(e)
+        })
       }
 
 
@@ -116,7 +116,7 @@ const CategoriesScreen = ({navigation,route}) => {
             data={categories}
             renderItem={({cat,item,index}) => {
                 return (
-                <View style={[styles.item,{backgroundColor: index%2 ===0 ? 'lightgray': MangoStyles.mangoPaleOrange}]} key={item.id} >
+                <View style={[styles.item,{backgroundColor: index%2 ===0 ? 'lightgray': MangoStyles.mangoPaleOrange}]} key={item._id} >
                     <TouchableOpacity onPress={() => {selectCategory(item)}} style={[styles.titleCont , { width : user &&  user.isAdmin? '60%' : '100%'}]}>
                         <Text style={[styles.title]}>{item.name}</Text>      
                     </TouchableOpacity>
@@ -139,7 +139,7 @@ const CategoriesScreen = ({navigation,route}) => {
 
             )
             }}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item._id}
           />
         </View>
         

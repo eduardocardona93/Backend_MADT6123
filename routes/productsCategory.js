@@ -5,7 +5,7 @@ let Product = require('../models/product.model');
 // GET ALL
 router.route('/').get((req, res) => {
   ProductsCategory.find().sort({ name: 'asc' })
-    .then(productsCategories => res.json(productsCategories))
+    .then(productsCategories => {console.log(productsCategories) ;res.json(productsCategories)})
     .catch(err => res.status(400).json('Error: ' + err));
 });
 

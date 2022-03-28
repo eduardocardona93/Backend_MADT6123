@@ -1,7 +1,7 @@
-
+import Constants from 'expo-constants';
 import uuid from 'react-native-uuid';
 import moment from 'moment';
-const SERVICE_URL = 'http://142.114.90.186:3050/'
+const SERVICE_URL = Constants.manifest.extra.apiUrl;
 
 // #region Users related operations
   export const Signup = ( user) => {
@@ -101,13 +101,13 @@ const SERVICE_URL = 'http://142.114.90.186:3050/'
   
   // #region Products related operations
   
-  export const getAllProducts = async () => {
+  export const getAllProducts = async (category,searchTerm) => {
     var products = [];
-    await fetch(
-        SERVICE_URL + 'products/', {method: 'GET',})
-        .then(response =>{
-          products = response;
-        }).catch(error =>{
+    const search = searchTerm && searchTerm !== '' ? '&searchText='+searchTerm : ''
+    await fetch(SERVICE_URL + 'products?category='+category+search, {method: 'GET',})
+        .then((response) => response.json())
+        .then(json =>{ products = json;})
+        .catch(error =>{
           console.log(error)
         })
 
@@ -148,9 +148,13 @@ const SERVICE_URL = 'http://142.114.90.186:3050/'
     })
   }
   
-  export const getProduct = (id) => {
-    return fetch(SERVICE_URL + 'products/'+ encodeURIComponent(id));
-    
+  export const getProduct = async (id) => {
+    let product = null
+    await fetch(SERVICE_URL + 'products/'+ encodeURIComponent(id))
+    .then((response) => response.json())
+    .then(json =>{ product = json;})
+    .catch(error =>{console.log(error)})
+    return product
   }
   export const removeProduct = (id) => {
     return fetch(SERVICE_URL + 'products/'+ encodeURIComponent(id), {method: 'DELETE'});
@@ -161,20 +165,21 @@ const SERVICE_URL = 'http://142.114.90.186:3050/'
   
   
   // #region Categories related operations
-  
+    
   export const getAllCategories = async () => {
-    var categories = [];
-    await fetch(
-        SERVICE_URL + 'productsCategories/', {method: 'GET',})
-        .then(response =>{
-          categories = response;
-        }).catch(error =>{
-          console.log(error)
-        })
+    let categories;
+    await  fetch(SERVICE_URL + 'productsCategories/')
+          .then((response) => response.json())
+          .then((json) => {
+            categories = json;
+          })
+          .catch((error) => {
+            console.error(error);
+          });
+          
 
-    return categories;
+    return categories
   }
-  
   export const createCategory = (categoryName) => {
     return fetch(
       SERVICE_URL + 'products/add', {

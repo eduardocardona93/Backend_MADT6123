@@ -25,7 +25,7 @@ const EditProductScreen = ({navigation,route}) => {
             productNameSet(productFound.name)
             productDescriptionSet(productFound.description)
             productPriceSet(productFound.price)
-            productCategorySet(categoriesFound.find(cat => cat.id === productFound.categoryId))
+            productCategorySet(categoriesFound.find(cat => cat._id === productFound.categoryId))
           }).catch()
         }
 
@@ -86,10 +86,10 @@ const EditProductScreen = ({navigation,route}) => {
     }   
     const renderCategoryList = () => {
         return categories.map((cat,i) => {
-          return <Picker.Item key={cat.id} label={ cat.name} value={cat} 
+          return <Picker.Item key={cat._id} label={ cat.name} value={cat} 
           style={[{
-            backgroundColor : productCategory == cat.id ? MangoStyles.mangoOrangeYellow : 'white',
-            color : productCategory == cat.id ? 'white' : 'black',
+            backgroundColor : productCategory == cat._id ? MangoStyles.mangoOrangeYellow : 'white',
+            color : productCategory == cat._id ? 'white' : 'black',
           }]}
            />
         })

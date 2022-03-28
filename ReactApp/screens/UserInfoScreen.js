@@ -65,7 +65,7 @@ const UserInfoScreen = ({navigation, route}) => {
       <FlatList 
         data={userOrders}
         renderItem={renderItem}
-        keyExtractor={item => item.id}
+        keyExtractor={item => item._id}
       />
       </View>
     </View>

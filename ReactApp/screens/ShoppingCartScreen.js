@@ -12,7 +12,7 @@ const ShoppingCartScreen = ({navigation}) => {
     const [shoppingCartObj, shoppingCartObjSet] = useState(null);
 
     const removeItem = (index) =>{
-        removeItemShoppingCart(index,user.id).then((resultObj)=>{
+        removeItemShoppingCart(index,user._id).then((resultObj)=>{
            
 
             if(resultObj === null){
@@ -37,8 +37,8 @@ const ShoppingCartScreen = ({navigation}) => {
         {
           text: "Place Order",
           onPress: () => {
-            console.log(shoppingCartObj.id)
-            updateOrderState(shoppingCartObj.id,'pending')
+            console.log(shoppingCartObj._id)
+            updateOrderState(shoppingCartObj._id,'pending')
             navigation.navigate('OrdersScreen')
           },
           style: "default",
@@ -83,8 +83,8 @@ const ShoppingCartScreen = ({navigation}) => {
       
 const findShoppingCart = ()=> {
     
-      getShopListDoc(user.id).then((order)=>{         
-          if(order && order.id){
+      getShopListDoc(user._id).then((order)=>{         
+          if(order && order._id){
               order.dateString = moment(order.date).format('DD/MM/YYYY hh:mm a');
               order.taxes = parseFloat(parseFloat(order.total) * 0.13);
               order.shipping = parseFloat(parseFloat(order.total) * 0.10);
