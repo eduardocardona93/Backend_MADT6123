@@ -1,7 +1,6 @@
 const router = require('express').Router();
 let Order = require('../models/order.model')
 let {ProductsInOrder,productsInOrderSchema} = require('../models/productsInOrder.model');
-const moment = require('moment')
 
 // GET ALL
 router.route('/').get((req, res) => {
