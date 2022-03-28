@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
-
+app.use(express.static("views"));
 app.use(cors());
 app.options('*', cors());
 app.use(express.json());
