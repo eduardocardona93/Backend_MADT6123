@@ -64,7 +64,6 @@ router.route('/passwordChange/:userID').get((req, res) => {
 });
 
 router.route('/recoverPassword/:userID').get((req, res) => {
-  console.log('recover enter')
   res.sendFile('./views/recoverPassword.html', { root: __dirname.replace('\\routes','') }, (err) => {
     if (err) res.sendStatus(404);
 });
