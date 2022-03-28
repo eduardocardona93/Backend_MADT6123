@@ -1,7 +1,7 @@
 const router = require('express').Router();
 let Order = require('../models/order.model')
 let {ProductsInOrder,productsInOrderSchema} = require('../models/productsInOrder.model');
-
+const moment = require('moment')
 // GET ALL
 router.route('/').get((req, res) => {
   ProductsInOrder.find()
@@ -12,18 +12,25 @@ router.route('/').get((req, res) => {
 
 // GET ALL
 router.route('/getSales').get((req, res) => {
-  let timeFilter = {}, typeFilter={}
+  let timeFilter = {}, typeFilter={};
   if(req.query.time === 'week'){
-    // timeFilter = {
-    //   $match: {
-    //     _id: {...typeFilter},
-    //     totalItem: {
-    //       $sum: "$totalItem"
-    //     }
-    //   }
-    // }
+    timeFilter = {
+      $match: {
+        $date: {
+          $gte: moment().add(-1,'weeks').format('DD/MM/YYYY hh:mm a'),
+          $lt: moment().format('DD/MM/YYYY hh:mm a')
+        }
+      }
+    }
   }else if(req.query.time === 'month'){
-    
+    timeFilter = {
+      $match: {
+        date: {
+          $gte: moment().add(-1,'month').format('DD/MM/YYYY hh:mm a'),
+          $lt: moment().format('DD/MM/YYYY hh:mm a')
+        }
+      }
+    }
   }
   if(req.query.type === 'categories'){
     typeFilter =  {
@@ -36,6 +43,15 @@ router.route('/getSales').get((req, res) => {
       "Name":"$name"
    }
   }
+  console.log({
+    ...timeFilter,
+      $group: {
+        _id: {...typeFilter},
+        totalItem: {
+          $sum: "$totalItem"
+        }
+      }
+  })
     ProductsInOrder.aggregate([{
       ...timeFilter,
       $group: {
@@ -51,7 +67,37 @@ router.route('/getSales').get((req, res) => {
 
 
 });
+router.route('/setSales').get((req, res) => {
+  Order.find().sort({ date: 'desc' })
+  .then(orders => {
+    try {
+      orders.forEach(order => {
+        order.dateString = moment().format('DD/MM/YYYY hh:mm a').toString();
+        order.items = order.items.map(item=>{
+          return {
+            categoryId: item.categoryId,
+            categoryName: item.categoryName,
+            date: order.dateString,
+            description: item.description,
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity,
+            totalItem: item.totalItem,
+            productId: item.productId,
+          };
+        })
+        order.save() 
+        .then(() => res.json('Order Updated'))
+        .catch(err => res.status(400).json('Error: ' + err));
+      })
+    } catch (error) {
+      res.status(400).json('Error: ' + error)
+    }
 
+  })
+  .catch(err => res.status(400).json('Error: ' + err));
+
+})
 //GET ONE
 router.route('/:id').get((req, res) => {
   ProductsInOrder.findById(req.params.id)

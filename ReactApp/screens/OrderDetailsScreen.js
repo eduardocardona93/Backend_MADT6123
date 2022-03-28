@@ -38,13 +38,7 @@ const OrderDetailsScreen =  ({ navigation, route })  => {
       
         isAdminSet(user && user.isAdmin)
         if(orderDetailObj === null){
-
-          let order = route.params.order
-          order.dateString = moment(order.date).format('DD/MM/YYYY hh:mm a');
-          order.taxes = parseFloat(parseFloat(order.total) * 0.13);
-          order.shipping = parseFloat(parseFloat(order.total) * 0.10);
-          order.net = parseFloat(parseFloat(order.total) + order.taxes + order.shipping);
-          orderDetailObjSet(order)
+          orderDetailObjSet(route.params.order)
         }
     })
     React.useLayoutEffect(() => {

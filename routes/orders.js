@@ -81,7 +81,7 @@ router.route('/addToShoppingCart').post((req, res) => {
           "net" : net,
           "taxes" : taxes,
           "shipping" : shipping,
-          "dateString" : dateString,
+          "date" : dateString,
           "userID" : req.body.userID,
           "items" : [{...req.body.newItem,
             categoryId:req.body.newItem.categoryId,
@@ -133,9 +133,21 @@ router.route('/changeState/:orderID').put((req, res) => {
     if(order){
       order.status = newStatus;
       if(order.status === 'completed'){
-        ProductsInOrder.insertMany(order.items)
-        .then(() => {
-          order.save() 
+        ProductsInOrder.insertMany(order.items.map(item =>{
+          return {
+            categoryId:item.categoryId,
+            categoryName:item.categoryName,
+            date:order.date,
+            description:item.description,
+            name:item.name,
+            price:item.price,
+            quantity:item.quantity,
+            totalItem:item.totalItem,
+            productId:item.productId
+          }
+        }))
+        .then(async () => {
+          await order.save() 
           .then(() => res.json('Order Updated'))
           .catch(err => res.status(400).json('Error: ' + err));
         })

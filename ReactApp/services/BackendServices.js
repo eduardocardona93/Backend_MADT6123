@@ -227,10 +227,7 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
         SERVICE_URL + 'orders/filtered/'+filterOrders, {method: 'GET',})
         .then((response) => response.json())
         .then(json =>{
-          orders = json.map(order => {
-            order.dateFormat = moment(order.date).format('DD/MM/YYYY hh:mm a').toString();
-            return order;
-          });
+          orders = json
         }).catch(error =>{
           console.log(error)
         })
@@ -245,10 +242,7 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
         SERVICE_URL + 'orders/filtered/'+filterOrders+'?filterUser='+userID, {method: 'GET',})
         .then((response) => response.json())
         .then(json =>{
-          orders = json.map(order => {
-            order.dateFormat = moment(order.date).format('DD/MM/YYYY hh:mm a').toString();
-            return order;
-          });
+          orders = json
         }).catch(error =>{
           console.log(error)
         })

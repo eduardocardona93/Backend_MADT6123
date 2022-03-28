@@ -6,7 +6,7 @@ const OrderListitem = ({ item, onPress, backgroundColor }) => {
     <TouchableOpacity onPress={onPress} style={[styles.item]}>
         <View style={styles.itemDescLeft}>
             <Text style={[styles.title]}>Order {item.title}</Text>
-            <Text >{item.dateFormat}</Text>
+            <Text >{item.dateString}</Text>
 
         </View>
         <View style={styles.itemDescRight}>
