@@ -28,7 +28,6 @@ const OrdersScreen = ({navigation}) => {
     const unsubscribe = navigation.addListener('focus', () => {
 
       try {
-        console.log('alaaaaaaaaaaaassl')
         userOrdersSet([])
         updateOrders('all')
       } catch (error) {
@@ -51,7 +50,7 @@ const OrdersScreen = ({navigation}) => {
         }))
       })
     }else{
-       getUserOrders(user.id,filterOrders).then(async(orders)=>{
+       getUserOrders(user._id,filterOrders).then(async(orders)=>{
         await userOrdersSet(orders.sort((a,b) => { return a.date > b.date ? -1 : 1}).map(order => {
           order.dateFormat = moment(order.date).format('DD/MM/YYYY hh:mm a').toString()
           return order;
@@ -103,7 +102,7 @@ const OrdersScreen = ({navigation}) => {
           <FlatList
             data={userOrders}
             renderItem={renderItem}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item._id}
           />
         </View>
         

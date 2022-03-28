@@ -20,7 +20,7 @@ const OrderDetailsScreen =  ({ navigation, route })  => {
         {
           text: "Accept",
           onPress: () => {
-            updateOrderState(orderDetailObj.id,newStatus)
+            updateOrderState(orderDetailObj._id,newStatus)
             let neworderDetail = {...orderDetailObj}
             neworderDetail.status = newStatus
             orderDetailObjSet(neworderDetail)

@@ -60,7 +60,7 @@ const UsersListScreen = ({navigation}) => {
                         <Text style={styles.subtitle}>{item.email} </Text>
                     </TouchableOpacity> 
                 )}}
-            keyExtractor={user => user.id}
+            keyExtractor={user => user._id}
         />
     </View>
   )

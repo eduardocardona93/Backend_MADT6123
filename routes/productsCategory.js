@@ -5,7 +5,7 @@ let Product = require('../models/product.model');
 // GET ALL
 router.route('/').get((req, res) => {
   ProductsCategory.find().sort({ name: 'asc' })
-    .then(productsCategories => res.json(productsCategories))
+    .then(productsCategories => {res.json(productsCategories)})
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
@@ -21,7 +21,6 @@ router.route('/:id').get((req, res) => {
 router.route('/:id').delete((req, res) => {
   Product.deleteMany({ categoryId: req.params.id})
   .then(response => {
-    console.log(response)
     ProductsCategory.findByIdAndDelete(req.params.id)
     .then(() => {
       res.json('Products Category deleted.');
@@ -41,7 +40,7 @@ router.route('/add').post((req, res) => {
   const newProductsCategory = new ProductsCategory({
     "name" : req.body.name
   });
-
+  
   newProductsCategory.save()
     .then(() => res.json('Products Category added!'))
     .catch(err => res.status(400).json('Error: ' + err));

@@ -13,17 +13,21 @@ const ItemDetailsScreen = ({ navigation, route }) => {
   const [product, productSet] = useState({})
   const productId =  route.params && route.params.id !== null ?  route.params.id : null;
 
-  useEffect(() => {
-      
+    React.useEffect(() => {
+    const unsubscribe = navigation.addListener('focus',async () => {
+      try {
+        getProduct(productId).then(productFound => {
+          productSet(productFound)
+        })
+      } catch (error) {
+        console.log(error)
+      }
 
-    getProduct(productId).then(productFound => {
-      productSet({...productFound})
-    }).catch()
-    
-    return () => {
-    }
-  }, [user])
-  
+      
+    });
+
+    return unsubscribe;
+  }, [navigation]);
   
   React.useLayoutEffect(() => {
     navigation.setOptions({
@@ -45,7 +49,7 @@ const ItemDetailsScreen = ({ navigation, route }) => {
   })
   const onPressAdd = () => {
     Alert.alert("Item added to your shopping list!");
-    addItemToShoppingCart(product,qty,user.id)
+    addItemToShoppingCart(product,qty,user._id)
     navigation.dispatch(CommonActions.goBack());
   } 
 

@@ -49,10 +49,10 @@ export default function HomeScreen({navigation, route}) {
     })
   })
   React.useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
+    const unsubscribe = navigation.addListener('focus',async () => {
       try {
         if(route.params && route.params.catId){
-          categoryIdSet(route.params.catId)
+           await categoryIdSet(route.params.catId)
         }
         getViewProducts(route.params && route.params.catId ? route.params.catId : '' , '')
       } catch (error) {
@@ -66,23 +66,16 @@ export default function HomeScreen({navigation, route}) {
   }, [navigation]);
 
   const getViewProducts = (catId,searchTerm) => {
-    getAllProducts().then(response => {
-      productsSet(response.filter(prod => { 
-        if(searchTerm !== ''){
-          return prod.categoryId === catId && 
-          (prod.name.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1 || prod.description.toLowerCase().indexOf(searchTerm.toLowerCase()) > -1)
-        }else{
-          return prod.categoryId === catId
-        }
-      })) 
+    getAllProducts(catId,searchTerm).then(response => {
+      productsSet(response) 
       
     })
   }
 
   const selectItem = (item) =>{
-    setSelectedId(item.id);
+    setSelectedId(item._id);
     navigation.navigate('ItemDetailsScreen', {
-      id : item.id
+      id : item._id
     })     
   }
 
@@ -105,7 +98,7 @@ export default function HomeScreen({navigation, route}) {
             renderItem={({ item }) => (
               <ProductListItem item={item} onPress={() => {selectItem(item)}}></ProductListItem>
             )}
-            keyExtractor={item => item.id}
+            keyExtractor={item => item._id}
           />
         </View>
         
