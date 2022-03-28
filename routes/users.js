@@ -89,7 +89,6 @@ router.route('/add').post((req, res) => {
 
   newUser.save()
     .then((response) => {
-      console.log(response)
       res.send({message: 'User added!', newUser:response})
     })
     .catch(err => {
@@ -100,7 +99,6 @@ router.route('/add').post((req, res) => {
 
 // UPDATE
 router.route('/update/:id').post((req, res) => {
-  console.log(req.params.id,req.body.name)
   User.findById(req.params.id)
     .then(user => {
 

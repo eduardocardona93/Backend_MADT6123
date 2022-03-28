@@ -262,8 +262,9 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
   
     await fetch(
       SERVICE_URL + 'orders/shoppingCart/'+userID, {method: 'GET',})
-      .then(response =>{
-        shopListDoc = response;
+      .then((response) => response.json())
+      .then(json =>{
+        shopListDoc = json;
       }).catch(error =>{
         console.log(error)
       })
@@ -271,7 +272,7 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
       return shopListDoc;
   }
   
-  export const addItemToShoppingCart = async ( item , quantity, userID) => {
+  export const addItemToShoppingCart = ( item , userID) => {
     return fetch(
       SERVICE_URL + 'orders/addToShoppingCart/', {
         method: 'POST',
@@ -281,14 +282,14 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
       },
       body: JSON.stringify({
         userID: userID,
-        newItem: newItem
+        newItem: {...item}
       })
     })
     
   }
   
   export const removeItemShoppingCart = ( index,userID) => {
-    return fetch(SERVICE_URL + 'orders/removeFromShoppingCart?userID='+userID+"&productIndex="+index, {method: 'DELETE'});
+    return fetch(SERVICE_URL + 'orders/removeFromShoppingCart/'+userID.toString()+"?productIndex="+index.toString(), {method: 'DELETE'});
   }
   
   export const updateOrderState = ( orderID,newStatus) => {

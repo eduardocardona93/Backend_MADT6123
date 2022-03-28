@@ -12,20 +12,20 @@ const ShoppingCartScreen = ({navigation}) => {
     const [shoppingCartObj, shoppingCartObjSet] = useState(null);
 
     const removeItem = (index) =>{
-        removeItemShoppingCart(index,user._id).then((resultObj)=>{
+        removeItemShoppingCart(index,user._id)
+        .then((response) => response.json())
+        .then((resultObj)=>{
            
-
+            console.log(resultObj)
             if(resultObj === null){
               shoppingCartObjSet(null)
               alert("Your shopping cart is empty")
             }else{
-              resultObj.dateString = moment(resultObj.date).format('DD/MM/YYYY hh:mm a');
-              resultObj.taxes = parseFloat(parseFloat(resultObj.total) * 0.13);
-              resultObj.shipping = parseFloat(parseFloat(resultObj.total) * 0.10);
-              resultObj.net = parseFloat(parseFloat(resultObj.total) + resultObj.taxes + resultObj.shipping);
               shoppingCartObjSet(resultObj)
             }
-        });
+        }).catch(e=>{
+          console.log(e)
+        })
         
     }
 
@@ -37,9 +37,12 @@ const ShoppingCartScreen = ({navigation}) => {
         {
           text: "Place Order",
           onPress: () => {
-            console.log(shoppingCartObj._id)
-            updateOrderState(shoppingCartObj._id,'pending')
-            navigation.navigate('OrdersScreen')
+            updateOrderState(shoppingCartObj._id,'pending').then(()=>{
+              shoppingCartObjSet(null)
+              navigation.navigate('OrdersScreen')
+            }).catch((e)=>{
+              console.log(e)
+            })
           },
           style: "default",
         },
@@ -85,10 +88,6 @@ const findShoppingCart = ()=> {
     
       getShopListDoc(user._id).then((order)=>{         
           if(order && order._id){
-              order.dateString = moment(order.date).format('DD/MM/YYYY hh:mm a');
-              order.taxes = parseFloat(parseFloat(order.total) * 0.13);
-              order.shipping = parseFloat(parseFloat(order.total) * 0.10);
-              order.net = parseFloat(parseFloat(order.total) + order.taxes + order.shipping);
               shoppingCartObjSet(order)
           }
         }).catch(e => {

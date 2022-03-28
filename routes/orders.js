@@ -19,7 +19,6 @@ router.route('/filtered/:filterStatus').get((req, res) => {
   if(filterUser && filterUser !== ''){
     userObj =  {userID :filterUser }
   }
-  console.log(statusObj,userObj)
   Order.find({ status: { $ne: "shopping" } ,...statusObj,...userObj }).sort({ title: 'desc' })
     .then(orders => {res.json(orders)})
     .catch(err => res.status(400).json('Error: ' + err));
@@ -62,7 +61,7 @@ router.route('/addToShoppingCart').post((req, res) => {
       order.total +=  parseFloat(req.body.newItem.totalItem);
       order.taxes = parseFloat(order.total * 0.13);
       order.shipping = parseFloat(order.total * 0.10);
-      order.net = parseFloat(order.total + taxes + shipping);
+      order.net = parseFloat(order.total + order.taxes + order.shipping);
       order.items.push(req.body.newItem)
       order.save() 
         .then(() => res.json('Item added!'))
@@ -83,10 +82,19 @@ router.route('/addToShoppingCart').post((req, res) => {
           "taxes" : taxes,
           "shipping" : shipping,
           "dateString" : dateString,
-          "userId" : req.body.userId,
-          "items" : [req.body.newItem],
+          "userID" : req.body.userID,
+          "items" : [{...req.body.newItem,
+            categoryId:req.body.newItem.categoryId,
+            categoryName:req.body.newItem.categoryName,
+            date:dateString,
+            description:req.body.newItem.description,
+            name:req.body.newItem.name,
+            price:req.body.newItem.price,
+            quantity:req.body.newItem.quantity,
+            totalItem:req.body.newItem.totalItem,
+            productId:req.body.newItem.productId
+          }],
       });
-
       newOrder.save() 
         .then(() => res.json('Item added!'))
         .catch(err => res.status(400).json('Error: ' + err));
@@ -97,11 +105,14 @@ router.route('/addToShoppingCart').post((req, res) => {
   .catch(err => res.status(400).json('Error: ' + err));
 });
 //DELETE ONE
-router.route('removeFromShoppingCart/').delete((req, res) => {
-
-  Order.findOne({ status:"shopping" ,userID :req.query.userID }).then(order => {
+router.route('/removeFromShoppingCart/:userID').delete((req, res) => {
+  Order.findOne({ status:"shopping" ,userID :req.params.userID }).then(order => {
     if(order.items.length > 1){
-      order.items.splice(req.query.index,1);
+      order.total = parseFloat(order.total) - order.items[req.query.productIndex].totalItem;
+      order.taxes = parseFloat(order.total * 0.13);
+      order.shipping = parseFloat(order.total * 0.10);
+      order.net = parseFloat(order.total + order.taxes + order.shipping);
+      order.items.splice(req.query.productIndex,1);
       order.save().then((orderSaved) => res.json(orderSaved))
       .catch(err => res.status(400).json('Error: ' + err));
     }else{
@@ -110,10 +121,6 @@ router.route('removeFromShoppingCart/').delete((req, res) => {
       .catch(err => res.status(400).json('Error: ' + err));
     }
   })
-.catch(err => res.status(400).json('Error: ' + err));
-  Order.findByIdAndDelete(req.params.id)
-    .then(() => res.json('Order deleted.'))
-    .catch(err => res.status(400).json('Error: ' + err));
 });
 
 

@@ -48,9 +48,14 @@ const ItemDetailsScreen = ({ navigation, route }) => {
     });
   })
   const onPressAdd = () => {
-    Alert.alert("Item added to your shopping list!");
-    addItemToShoppingCart(product,qty,user._id)
-    navigation.dispatch(CommonActions.goBack());
+    addItemToShoppingCart({...product,quantity:qty,totalItem: parseFloat(qty) * parseFloat(product.price),productId:product._id},user._id)
+    .then(()=>{
+      Alert.alert("Item added to your shopping list!");
+      navigation.dispatch(CommonActions.goBack());
+
+    }).catch((e)=>{
+      console.log(e)
+    })
   } 
 
 
