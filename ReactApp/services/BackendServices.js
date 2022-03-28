@@ -74,8 +74,9 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
     var users = [];
     await fetch(
         SERVICE_URL + 'users/', {method: 'GET',})
-        .then(response =>{
-            users = response;
+        .then((response) => response.json())
+        .then(json =>{
+            users = json;
         }).catch(error =>{
           console.log(error)
         })
@@ -88,9 +89,10 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
 
     var users = [];
     await fetch(
-        SERVICE_URL + 'users/'+filterTerm, {method: 'GET',})
-        .then(response =>{
-            users = response;
+        SERVICE_URL + 'users/'+(filterTerm && filterTerm !== '' ? filterTerm : ''), {method: 'GET',})
+        .then((response) => response.json())
+        .then(json =>{
+            users = json;
         }).catch(error =>{
           console.log(error)
         })
@@ -223,8 +225,12 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
     var orders = [];
     await fetch(
         SERVICE_URL + 'orders/filtered/'+filterOrders, {method: 'GET',})
-        .then(response =>{
-          orders = response;
+        .then((response) => response.json())
+        .then(json =>{
+          orders = json.map(order => {
+            order.dateFormat = moment(order.date).format('DD/MM/YYYY hh:mm a').toString();
+            return order;
+          });
         }).catch(error =>{
           console.log(error)
         })
@@ -237,8 +243,12 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
     var orders = [];
     await fetch(
         SERVICE_URL + 'orders/filtered/'+filterOrders+'?filterUser='+userID, {method: 'GET',})
-        .then(response =>{
-          orders = response;
+        .then((response) => response.json())
+        .then(json =>{
+          orders = json.map(order => {
+            order.dateFormat = moment(order.date).format('DD/MM/YYYY hh:mm a').toString();
+            return order;
+          });
         }).catch(error =>{
           console.log(error)
         })
@@ -282,8 +292,7 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
   }
   
   export const updateOrderState = ( orderID,newStatus) => {
-
-    return fetch(SERVICE_URL + 'orders/changeState/'+orderID+"&newStatus="+newStatus, {method: 'PUT'});
+    return fetch(SERVICE_URL + 'orders/changeState/'+orderID+"?newStatus="+newStatus, {method: 'PUT'});
 
   
   }

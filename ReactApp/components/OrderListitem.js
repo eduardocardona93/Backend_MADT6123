@@ -1,7 +1,5 @@
 import { StyleSheet, Text, View,TouchableOpacity, Image } from 'react-native'
 import React from 'react'
-import moment from 'moment';
-import { backgroundColor } from 'react-native/Libraries/Components/View/ReactNativeStyleAttributes';
 
 const OrderListitem = ({ item, onPress, backgroundColor }) => {
   return (

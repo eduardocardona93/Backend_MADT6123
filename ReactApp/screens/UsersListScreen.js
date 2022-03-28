@@ -1,4 +1,4 @@
-import { StyleSheet, Text, View, FlatList,TouchableOpacity } from 'react-native'
+ import { StyleSheet, Text, View, FlatList,TouchableOpacity } from 'react-native'
 import React,{useState} from 'react'
 import {getUsersFiltered } from '../services/BackendServices';
 import Prompt from 'react-native-prompt-crossplatform';
@@ -9,7 +9,8 @@ const UsersListScreen = ({navigation}) => {
     const [promptVisible,promptVisibleSet] = useState(false);
     const [promptText,promptTextSet] = useState('');
     const [searchTerm,searchTermSet] = useState('');
-    const getViewUsers = ()=> {
+    const getViewUsers = (searchTerm)=> {
+        console.log(searchTerm)
         getUsersFiltered(searchTerm).then(response => {
             if(response){
                 usersListSet(response);
@@ -18,7 +19,7 @@ const UsersListScreen = ({navigation}) => {
     }
     React.useEffect(() => {
         const unsubscribe = navigation.addListener('focus', () => {
-            getViewUsers();
+            getViewUsers('');
         });
     
         // Return the function to unsubscribe from the event so it gets removed on unmount
@@ -49,7 +50,7 @@ const UsersListScreen = ({navigation}) => {
               isVisible={promptVisible}
               onChangeText={(text) => {promptTextSet(text)}}
               onCancel={() => {promptVisibleSet(false)}}
-              onSubmit={() => {searchTermSet(promptText);promptTextSet('');promptVisibleSet(false);getViewUsers()}}
+              onSubmit={() => {searchTermSet();promptTextSet('');promptVisibleSet(false);getViewUsers(promptText)}}
             />
         <FlatList
             data={usersList}

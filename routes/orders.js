@@ -19,8 +19,9 @@ router.route('/filtered/:filterStatus').get((req, res) => {
   if(filterUser && filterUser !== ''){
     userObj =  {userID :filterUser }
   }
-  Order.find({ status: { $ne: "shopping" } ,...filterStatus,...userObj }).sort({ title: 'desc' })
-    .then(orders => res.json(orders))
+  console.log(statusObj,userObj)
+  Order.find({ status: { $ne: "shopping" } ,...statusObj,...userObj }).sort({ title: 'desc' })
+    .then(orders => {res.json(orders)})
     .catch(err => res.status(400).json('Error: ' + err));
 });
 
@@ -119,17 +120,23 @@ router.route('removeFromShoppingCart/').delete((req, res) => {
 //UPDATE STATE
 
 router.route('/changeState/:orderID').put((req, res) => {
-  Order.findById(req.body.orderID)
+  const newStatus = req.query.newStatus;
+  Order.findById(req.params.orderID)
   .then(order => {
     if(order){
       order.status = newStatus;
       if(order.status === 'completed'){
+       
         ProductsInOrder.bulkSave(order.items)
         .then(() => {
           order.save() 
           .then(() => res.json('Order Updated'))
           .catch(err => res.status(400).json('Error: ' + err));
         })
+        .catch(err => res.status(400).json('Error: ' + err));
+      }else{
+        order.save() 
+        .then(() => res.json('Order Updated'))
         .catch(err => res.status(400).json('Error: ' + err));
       }
 

@@ -28,7 +28,6 @@ const OrdersScreen = ({navigation}) => {
     const unsubscribe = navigation.addListener('focus', () => {
 
       try {
-        userOrdersSet([])
         updateOrders('all')
       } catch (error) {
         console.log(error)
@@ -41,20 +40,15 @@ const OrdersScreen = ({navigation}) => {
   }, [navigation]);
 
   const updateOrders = async (filterOrders) => {
-
+    console.log(filterOrders)
     if(user && user.isAdmin){
+      userOrdersSet([])
       getAllOrders(filterOrders).then(async(orders)=>{
-        await userOrdersSet(orders.sort((a,b) => { return a.date > b.date ? -1 : 1}).map(order => {
-          order.dateFormat = moment(order.date).format('DD/MM/YYYY hh:mm a').toString()
-          return order;
-        }))
+        await userOrdersSet(orders)
       })
     }else{
        getUserOrders(user._id,filterOrders).then(async(orders)=>{
-        await userOrdersSet(orders.sort((a,b) => { return a.date > b.date ? -1 : 1}).map(order => {
-          order.dateFormat = moment(order.date).format('DD/MM/YYYY hh:mm a').toString()
-          return order;
-        }))
+        await userOrdersSet(orders)
       })
     }
 
