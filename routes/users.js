@@ -62,6 +62,13 @@ router.route('/passwordChange/:userID').get((req, res) => {
     })
     .catch(err => res.status(400).json('Error: ' + err));
 });
+
+router.route('/recoverPassword/:userID').get((req, res) => {
+  console.log('recover enter')
+  res.sendFile('./views/recoverPassword.html', { root: __dirname.replace('\\routes','') }, (err) => {
+    if (err) res.sendStatus(404);
+});
+});
 //DELETE ONE
 router.route('/:id').delete((req, res) => {
   User.findByIdAndDelete(req.params.id)
