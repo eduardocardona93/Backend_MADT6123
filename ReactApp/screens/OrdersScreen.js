@@ -28,7 +28,6 @@ const OrdersScreen = ({navigation}) => {
     const unsubscribe = navigation.addListener('focus', () => {
 
       try {
-        console.log('alaaaaaaaaaaaassl')
         userOrdersSet([])
         updateOrders('all')
       } catch (error) {

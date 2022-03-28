@@ -103,12 +103,17 @@ const CategoriesScreen = ({navigation,route}) => {
                 onSubmit={() => {
                     if(promptText && promptText !== ''){
                         if(selectedCategory && selectedCategory.name){
-                            updateCategory({'name': promptText,...selectedCategory})
+                            updateCategory({...selectedCategory,'name': promptText}).then(()=>{
+                              promptVisibleSet(false);
+                              updateCategoryList();
+                            })
                         }else{
-                            createCategory(promptText)
+                            createCategory(promptText).then(()=>{
+                              promptVisibleSet(false);
+                              updateCategoryList();
+                            })
                         }
-                        promptVisibleSet(false);
-                        updateCategoryList();
+
                     }
                 }}
             />

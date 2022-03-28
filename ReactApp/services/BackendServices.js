@@ -182,7 +182,7 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
   }
   export const createCategory = (categoryName) => {
     return fetch(
-      SERVICE_URL + 'products/add', {
+      SERVICE_URL + 'productsCategories/add', {
         method: 'POST',
         headers: {
         Accept: 'application/json',
