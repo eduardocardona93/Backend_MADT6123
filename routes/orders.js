@@ -133,8 +133,7 @@ router.route('/changeState/:orderID').put((req, res) => {
     if(order){
       order.status = newStatus;
       if(order.status === 'completed'){
-       
-        ProductsInOrder.bulkSave(order.items)
+        ProductsInOrder.insertMany(order.items)
         .then(() => {
           order.save() 
           .then(() => res.json('Order Updated'))

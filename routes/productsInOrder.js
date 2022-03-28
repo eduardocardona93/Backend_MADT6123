@@ -14,9 +14,16 @@ router.route('/').get((req, res) => {
 router.route('/getSales').get((req, res) => {
   let timeFilter = {}, typeFilter={}
   if(req.query.time === 'week'){
-
+    // timeFilter = {
+    //   $match: {
+    //     _id: {...typeFilter},
+    //     totalItem: {
+    //       $sum: "$totalItem"
+    //     }
+    //   }
+    // }
   }else if(req.query.time === 'month'){
-
+    
   }
   if(req.query.type === 'categories'){
     typeFilter =  {
