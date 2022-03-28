@@ -1,5 +1,7 @@
 const router = require('express').Router();
+let Order = require('../models/order.model')
 let {ProductsInOrder,productsInOrderSchema} = require('../models/productsInOrder.model');
+const moment = require('moment')
 
 // GET ALL
 router.route('/').get((req, res) => {
@@ -7,11 +9,41 @@ router.route('/').get((req, res) => {
     .then(productsInOrder => res.json(productsInOrder))
     .catch(err => res.status(400).json('Error: ' + err));
 });
+
+
 // GET ALL
 router.route('/getSales').get((req, res) => {
-  ProductsInOrder.find()
-    .then(productsInOrder => res.json(productsInOrder))
-    .catch(err => res.status(400).json('Error: ' + err));
+  let timeFilter = {}, typeFilter={}
+  if(req.query.time === 'week'){
+
+  }else if(req.query.time === 'month'){
+
+  }
+  if(req.query.type === 'categories'){
+    typeFilter =  {
+      "id" : "$categoryId",
+      "Name":"$categoryName"
+   }
+  }else{
+    typeFilter = {
+      "id" : "$productId",
+      "Name":"$name"
+   }
+  }
+    ProductsInOrder.aggregate([{
+      ...timeFilter,
+      $group: {
+        _id: {...typeFilter},
+        totalItem: {
+          $sum: "$totalItem"
+        }
+      }
+    }]).then(sales => {
+      res.json(sales)
+    }).catch(err => res.status(400).json('Error: ' + err));
+  
+
+
 });
 
 //GET ONE

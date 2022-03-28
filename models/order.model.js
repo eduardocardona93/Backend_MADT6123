@@ -11,7 +11,7 @@ const orderSchema = new Schema({
     taxes:{type: Number, default:0},
     shipping:{type: Number, default:0},
     dateString:{type: String},
-    items:   [productsInOrderSchema]
+    items:   [productsInOrderSchema],
 }, {
   timestamps: true,
 });
