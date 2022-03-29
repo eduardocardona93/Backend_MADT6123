@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const path = require('path');
 
 require('dotenv').config();
 
@@ -31,6 +32,13 @@ app.use('/productsCategories', productsCategoriesRouter);
 app.use('/productsInOrders', productsInOrdersRouter);
 app.use('/orders', ordersRouter);
 app.use(express.static("views"));
+app.use('/public', express.static(path.join(__dirname, '/')));
+// Handle React routing, return all requests to React app
+app.get('/recoverPassword/:userID', function(req, res) {
+  res.sendFile(path.join(__dirname, 'views', 'recoverPassword.html'),(err) => {
+    if (err) res.sendStatus(404);
+});
+    });
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });
