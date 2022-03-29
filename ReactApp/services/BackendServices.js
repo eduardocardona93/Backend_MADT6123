@@ -10,23 +10,40 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
         SERVICE_URL + 'users/add', {
           method: 'POST',
           headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+              "address" : user.address,
+              "email" : user.email,
+              "isAdmin" : false,
+              "name" : user.name,
+              "password" : user.password,
+              "phoneNumber" : user.phoneNumber,
+          })
+        }
+      )
+    
+  }
+
+  export const resetPassword = (to_email, email_subject, email_body) => {
+    return fetch( SERVICE_URL + 'users/sendEmail',
+      {
+        method: 'POST',
+        headers: {
           Accept: 'application/json',
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-            "address" : user.address,
-            "email" : user.email,
-            "isAdmin" : false,
-            "name" : user.name,
-            "password" : user.password,
-            "phoneNumber" : user.phoneNumber,
+          "to_email": to_email,
+          "email_subject": email_subject,
+          "email_body": email_body
         })
-      })
-    
+      }
+    )
+    // .then(() => { res.json() })
   }
   
-
-
   export const GetUserInfo = async (emailAddress) => {
     let userInfo = null
     await  fetch(SERVICE_URL + 'users/findByEmail/'+encodeURIComponent(emailAddress))
@@ -99,6 +116,7 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
 
     return users;
   }
+
   // #endregion
   
   // #region Products related operations
@@ -311,5 +329,7 @@ const SERVICE_URL = Constants.manifest.extra.apiUrl;
 
       return dataSales;
   }
+
+  // export const sendEmail = 
 
   // #endregion

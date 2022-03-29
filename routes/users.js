@@ -1,5 +1,8 @@
 const router = require('express').Router();
 let User = require('../models/user.model');
+var nodemailer = require('nodemailer');
+
+require('dotenv').config();
 
 // GET ALL
 router.route('/').get((req, res) => {
@@ -111,5 +114,41 @@ router.route('/update/:id').post((req, res) => {
     })
     .catch(err => res.status(400).json('Error: ' + err));
 });
+
+// SEND EMAIL
+router.route('/sendEmail').post((req, res) => {
+
+  // res.json("{response: 'send email API called'}")
+  const from_email = 'mangoplace.app@gmail.com';
+  const to_email = req.body.to_email;
+  const email_subject = req.body.email_subject;
+  const email_body = req.body.email_body;
+
+  var transporter = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+      user: from_email,
+      pass: process.env.gmail_pass
+    }
+  });
+  
+  var mailOptions = {
+    from: from_email,
+    to: to_email,
+    subject: email_subject,
+    text: email_body
+  };
+  
+  transporter.sendMail(mailOptions, function(error, info){
+    if (error) {
+      res.json('error')
+      console.log(error);
+    } else {
+      res.json(`{"message": "email sent"}`)
+      console.log('Email sent: ' + info.response);
+    }
+  });
+
+})
 
 module.exports = router;

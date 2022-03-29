@@ -6,7 +6,7 @@ import MangoStyles from '../styles'
 import useWindowDimensions from 'react-native/Libraries/Utilities/useWindowDimensions';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 
-import {  LoginUser } from '../services/BackendServices';
+import {  GetUserInfo, LoginUser, resetPassword } from '../services/BackendServices';
 import { InputField, ErrorMessage } from '../components';
 
 
@@ -30,7 +30,39 @@ const LoginScreen = ({navigation}) => {
     if (email === ''){
       Alert.alert("Please type your email first")
     }else {
-        Alert.alert("An instruction has been sent to your email")
+
+      GetUserInfo(email)
+        .then((response) => {
+          if(response != null) {
+            const userId = response._id;
+            const user_email = response.email;
+            const email_subject = "Password Reset Request - The Mango Place"
+            const email_body =`
+              <html>
+                <a href='https://madt-6123.herokuapp.com/recoverPassword/${userId}'>Click here to reset the password</a>
+              </html> 
+            `
+            
+            var resetPassResponse = '';
+            resetPassword(user_email, email_subject, email_body)
+              .then((res) => res.json())
+              .then((json) => {
+                console.log(json);
+                resetPassResponse = JSON.parse(json).message
+                Alert.alert(resetPassResponse)
+              })
+              .catch( e => {
+                console.log(e);
+                resetPassResponse = "error while sending the password reset email"
+              })
+
+            // Alert.alert(resetPassResponse)
+          }
+          else {
+            Alert.alert("User not found");
+          }
+        })
+      
       }
   }
     
