@@ -6,7 +6,7 @@ require('dotenv').config();
 
 const app = express();
 const port = process.env.PORT || 5000;
-app.use(express.static("views"));
+
 app.use(cors());
 app.options('*', cors());
 app.use(express.json());
@@ -30,7 +30,7 @@ app.use('/products', productsRouter);
 app.use('/productsCategories', productsCategoriesRouter);
 app.use('/productsInOrders', productsInOrdersRouter);
 app.use('/orders', ordersRouter);
-
+app.use(express.static("views"));
 app.listen(port, () => {
     console.log(`Server is running on port: ${port}`);
 });
