@@ -35,7 +35,7 @@ app.use('/orders', ordersRouter);
 app.use(express.static("views"));
 app.use('/public', express.static(path.join(__dirname, '/')));
 // Handle React routing, return all requests to React app
-app.get('/recoverPassword/:userID', function(req, res) {
+app.get('/recoverPassword', function(req, res) {
   res.sendFile(path.join(__dirname, 'views', 'recoverPassword.html'),(err) => {
     if (err) res.sendStatus(404);
 });
