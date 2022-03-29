@@ -54,6 +54,7 @@ const LoginScreen = ({navigation}) => {
               .catch( e => {
                 console.log(e);
                 resetPassResponse = "error while sending the password reset email"
+                Alert.alert(resetPassResponse)
               })
 
             // Alert.alert(resetPassResponse)
