@@ -118,8 +118,9 @@ router.route('/setSales').get((req, res) => {
     try {
       orders.forEach(order => {
         order.dateString = moment().format('DD/MM/YYYY hh:mm a').toString();
-        order.items = order.items.map(item=>{
-          return {
+
+        order.items.forEach(async item=>{
+          const newPr = new ProductsInOrder( {
             categoryId: item.categoryId,
             categoryName: item.categoryName,
             date: order.dateString,
@@ -129,11 +130,10 @@ router.route('/setSales').get((req, res) => {
             quantity: item.quantity,
             totalItem: item.totalItem,
             productId: item.productId,
-          };
+          })
+          await newPr.save()
         })
-        order.save() 
-        .then(() => res.json('Order Updated'))
-        .catch(err => res.status(400).json('Error: ' + err));
+
       })
     } catch (error) {
       res.status(400).json('Error: ' + error)

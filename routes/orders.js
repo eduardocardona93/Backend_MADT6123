@@ -71,6 +71,7 @@ router.route('/addToShoppingCart').post((req, res) => {
         const consecutive = response.length > 0 ? parseInt(response[0].title) : 0;
         const addSubtotal = parseFloat(req.body.newItem.totalItem);
         const dateString = moment().format('DD/MM/YYYY hh:mm a').toString();
+        console.log(dateString)
         const taxes = parseFloat(addSubtotal * 0.13);
         const shipping = parseFloat(addSubtotal * 0.10);
         const net = parseFloat(addSubtotal + taxes + shipping);
@@ -81,7 +82,7 @@ router.route('/addToShoppingCart').post((req, res) => {
           "net" : net,
           "taxes" : taxes,
           "shipping" : shipping,
-          "date" : dateString,
+          "dateString" : dateString,
           "userID" : req.body.userID,
           "items" : [{...req.body.newItem,
             categoryId:req.body.newItem.categoryId,
