@@ -50,12 +50,12 @@ const AccountScreen = ({navigation, route}) => {
         .then((res) => res.json())
         .then((json) => {
           resetPassResponse = JSON.parse(json).message
-          Alert.alert(resetPassResponse)
+          alert(resetPassResponse)
         })
         .catch( e => {
           console.log(e);
           resetPassResponse = "error while sending the password reset email"
-          Alert.alert(resetPassResponse)
+          alert(resetPassResponse)
         })
 
       // Alert.alert(resetPassResponse)
