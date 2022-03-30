@@ -50,7 +50,7 @@ router.route('/loginUser/:email').get((req, res) => {
 });
 
 router.route('/passwordChange/:userID').get((req, res) => {
-  User.findById (userID)
+  User.findById (req.params.userID)
     .then(user => {
       if(!user){
         res.json({message:"Incorrect User email" ,success:false})
@@ -59,17 +59,21 @@ router.route('/passwordChange/:userID').get((req, res) => {
         user.password = req.query.password;
         user.save()
         .then(() => res.json({message:"Password successfully changed!!" ,success:true}))
-        .catch(err => res.status(400).json('Error: ' + err));
+        .catch(err => res.status(400).json({errorMsg: 'Error: ' + err}));
         
       }
     })
-    .catch(err => res.status(400).json('Error: ' + err));
+    .catch(err => res.status(400).json({errorMsg: 'Error: ' + err}));
 });
 
-router.route('/recoverPassword/:userID').get((req, res) => {
-  res.sendFile('./views/recoverPassword.html', { root: __dirname.replace('\\routes','') }, (err) => {
-    if (err) res.sendStatus(404);
-});
+router.route('/recoverPassword/:id').get((req, res) => {
+  if(!req.params.id){
+    res.sendStatus(404)
+  }else{
+    res.sendFile('./views/recoverPassword.html', { root: __dirname.replace('\\routes','') }, (err) => {
+      if (err) res.sendStatus(404);
+    });
+  }
 });
 //DELETE ONE
 router.route('/:id').delete((req, res) => {
@@ -136,7 +140,9 @@ router.route('/sendEmail').post((req, res) => {
     from: from_email,
     to: to_email,
     subject: email_subject,
-    text: email_body
+    text: `You have requested to change your password, click in the link to reset the password:  ${email_body} </a>`,
+    html: `You have requested to change your password <a href='${email_body}'>Click here to reset the password</a>`,
+    amp: `You have requested to change your password <a href='${email_body}'>Click here to reset the password</a>`
   };
   
   transporter.sendMail(mailOptions, function(error, info){
@@ -144,7 +150,7 @@ router.route('/sendEmail').post((req, res) => {
       res.json('error')
       console.log(error);
     } else {
-      res.json(`{"message": "email sent"}`)
+      res.json(`{"message": "An email was sent to your address"}`)
       console.log('Email sent: ' + info.response);
     }
   });

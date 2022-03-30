@@ -1,15 +1,12 @@
 import React, { useContext, useState, useEffect,useLayoutEffect  } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Pressable } from 'react-native'
 import MangoStyles from '../styles'
-import Firebase from '../FirebaseConfig/Config'
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
 import { IconButton } from '../components';
 import { LogBox } from 'react-native';
-import { Ionicons, FontAwesome5, AntDesign, MaterialIcons } from '@expo/vector-icons';
 LogBox.ignoreLogs(['Setting a timer']);
 LogBox.ignoreAllLogs();
 
-const auth = Firebase.auth();
 
 const AccountScreen = ({navigation, route}) => {
   const { user , setUser} = useContext(AuthenticatedUserContext);
@@ -39,7 +36,27 @@ const AccountScreen = ({navigation, route}) => {
   
   
   const onPressAccInfoChange = () => {
-    auth.sendPasswordResetEmail(user.email)
+    if(user != null) {
+      const userId = user._id;
+      const user_email = user.email;
+      const email_subject = "Password Reset Request - The Mango Place"
+      const email_body =`${SERVICE_URL}users/recoverPassword/${userId}`
+      
+      var resetPassResponse = '';
+      resetPassword(user_email, email_subject, email_body)
+        .then((res) => res.json())
+        .then((json) => {
+          resetPassResponse = JSON.parse(json).message
+          Alert.alert(resetPassResponse)
+        })
+        .catch( e => {
+          console.log(e);
+          resetPassResponse = "error while sending the password reset email"
+          Alert.alert(resetPassResponse)
+        })
+
+      // Alert.alert(resetPassResponse)
+    }
   }
 
   React.useLayoutEffect(() => {

@@ -5,10 +5,12 @@ import Logo from '../assets/mango_letter.png';
 import MangoStyles from '../styles'
 import useWindowDimensions from 'react-native/Libraries/Utilities/useWindowDimensions';
 import { AuthenticatedUserContext } from '../navigation/AuthenticatedUserProvider';
+import Constants from 'expo-constants';
+
 
 import {  GetUserInfo, LoginUser, resetPassword } from '../services/BackendServices';
 import { InputField, ErrorMessage } from '../components';
-
+const SERVICE_URL = Constants.manifest.extra.apiUrl;
 
 const LoginScreen = ({navigation}) => {
   const {height} = useWindowDimensions();
@@ -37,11 +39,7 @@ const LoginScreen = ({navigation}) => {
             const userId = response._id;
             const user_email = response.email;
             const email_subject = "Password Reset Request - The Mango Place"
-            const email_body =`
-              <html>
-                <a href='https://madt-6123.herokuapp.com/recoverPassword/${userId}'>Click here to reset the password</a>
-              </html> 
-            `
+            const email_body =`${SERVICE_URL}users/recoverPassword/${userId}`
             
             var resetPassResponse = '';
             resetPassword(user_email, email_subject, email_body)
