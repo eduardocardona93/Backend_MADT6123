@@ -45,12 +45,10 @@ const LoginScreen = ({navigation}) => {
             resetPassword(user_email, email_subject, email_body)
               .then((res) => res.json())
               .then((json) => {
-                console.log(json);
                 resetPassResponse = JSON.parse(json).message
                 Alert.alert(resetPassResponse)
               })
               .catch( e => {
-                console.log(e);
                 resetPassResponse = "error while sending the password reset email"
                 Alert.alert(resetPassResponse)
               })

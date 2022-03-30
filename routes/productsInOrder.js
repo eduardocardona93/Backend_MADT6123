@@ -78,15 +78,6 @@ router.route('/getSales').get((req, res) => {
         totalMonth: 0
       }
     }
-    products[itemObj.productId].total = parseFloat(products[itemObj.productId].total) + parseFloat(itemObj.totalItem)
-    if (Math.abs(moment().diff(moment(itemObj.date), 'weeks')) < 1) {
-      products[itemObj.productId].totalWeek = parseFloat(products[itemObj.productId].totalWeek) + parseFloat(itemObj.totalItem)
-    }
-    if (Math.abs(moment().diff(moment(itemObj.date), 'months')) < 1) {
-      products[itemObj.productId].totalMonth = parseFloat(products[itemObj.productId].totalMonth) + parseFloat(itemObj.totalItem)
-    }
-
-
     if (!categories[itemObj.categoryId]) {
       categories[itemObj.categoryId] = {
         id: itemObj.categoryId,
@@ -96,12 +87,14 @@ router.route('/getSales').get((req, res) => {
         totalMonth: 0
       }
     }
-    console.log(parseFloat(itemObj.totalItem))
+    products[itemObj.productId].total = parseFloat(products[itemObj.productId].total) + parseFloat(itemObj.totalItem)
     categories[itemObj.categoryId].total = parseFloat(categories[itemObj.categoryId].total) + parseFloat(itemObj.totalItem)
     if (Math.abs(moment().diff(moment(itemObj.date), 'weeks')) < 1) {
+      products[itemObj.productId].totalWeek = parseFloat(products[itemObj.productId].totalWeek) + parseFloat(itemObj.totalItem)
       categories[itemObj.categoryId].totalWeek = parseFloat(categories[itemObj.categoryId].totalWeek) + parseFloat(itemObj.totalItem)
     }
     if (Math.abs(moment().diff(moment(itemObj.date), 'months')) < 1) {
+      products[itemObj.productId].totalMonth = parseFloat(products[itemObj.productId].totalMonth) + parseFloat(itemObj.totalItem)
       categories[itemObj.categoryId].totalMonth = parseFloat(categories[itemObj.categoryId].totalMonth) + parseFloat(itemObj.totalItem)
     }
   })
@@ -117,13 +110,13 @@ router.route('/setSales').get((req, res) => {
   .then(orders => {
     try {
       orders.forEach(order => {
-        order.dateString = moment().format('DD/MM/YYYY hh:mm a').toString();
+        order.dateString =
 
-        order.items.forEach(async item=>{
+        order.items.forEach(async (item,index)=>{
           const newPr = new ProductsInOrder( {
             categoryId: item.categoryId,
             categoryName: item.categoryName,
-            date: order.dateString,
+            date:  moment().add(-8 + index,'days').toISOString().toString(),
             description: item.description,
             name: item.name,
             price: item.price,
@@ -136,6 +129,7 @@ router.route('/setSales').get((req, res) => {
 
       })
     } catch (error) {
+      console.log(error)
       res.status(400).json('Error: ' + error)
     }
 
