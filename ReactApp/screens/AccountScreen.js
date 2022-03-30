@@ -6,7 +6,8 @@ import { IconButton } from '../components';
 import { LogBox } from 'react-native';
 LogBox.ignoreLogs(['Setting a timer']);
 LogBox.ignoreAllLogs();
-
+import Constants from 'expo-constants';
+const SERVICE_URL = Constants.manifest.extra.apiUrl;
 
 const AccountScreen = ({navigation, route}) => {
   const { user , setUser} = useContext(AuthenticatedUserContext);
